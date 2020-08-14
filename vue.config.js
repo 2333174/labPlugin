@@ -11,7 +11,7 @@ const port = 8100 // dev port
 
 module.exports = {
   // publicPath: dev ? `//localhost:${port}` : '/',
-  publicPath: '/',
+  publicPath: '/plugin/ShadowsProportion',
   outputDir: 'dist',
   // assetsDir: 'static',
   filenameHashing: true,

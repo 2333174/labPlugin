@@ -6,7 +6,7 @@ import VueRouter from 'vue-router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import axios from 'axios'
-import actions from 'utils/actions.js'
+// import actions from 'utils/actions.js'
 import './publicPath'
 
 Vue.config.productionTip = false
@@ -60,7 +60,7 @@ export async function unmount () {
   instance.$destroy()
   instance = null
   router = null
-  actions.offGlobalStateChange()
+  // actions.offGlobalStateChange()
 }
 
 export async function update (props) {

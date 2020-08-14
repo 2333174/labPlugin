@@ -19,7 +19,7 @@
         <el-form-item
           label="阈值"
         >
-          <el-input v-model="form.T"></el-input>
+          <el-input v-model="inputForm.T"></el-input>
         </el-form-item>
       </el-form>
       <div style="margin-top:10px;text-align:center" v-show="!isCreated">
@@ -64,26 +64,22 @@
 </template>
 
 <script>
-import actions from 'utils/actions'
 export default {
   name: 'pluginDialog',
   data () {
     return {
-      form: {},
-      inputForm: {},
-      paramForm: {},
+      inputForm: {
+        inputFile: '',
+        outputFile: '',
+        T: ''
+      },
       isSuccess: false,
       isCreated: false,
-      // isProgress: false,
       title: '配置',
       time: '',
       pluginName: '去阴影',
       datasetInfo: {},
       projectId: '',
-      pluginURL: 'http://localhost:8006',
-      pluginInput: {
-
-      },
       pluginInfo: {
         name: '去阴影',
         pluginName: 'ShadowsProportion'
@@ -93,75 +89,33 @@ export default {
   components: {
   },
   mounted () {
-    // actions.onGlobalStateChange((state, prevState) => {
-    //   console.log(state.pluginInfo, 'state')
-    //   const datasetInfo = state.datasetInfo
-    //   const pluginInfo = state.pluginInfo
-    //   const isPluginShow = state.isPluginShow
-    //   this.$store.commit('setDatasetInfo', datasetInfo)
-    //   this.$store.commit('setPluginInfo', pluginInfo)
-    //   this.$store.commit('setIsPluginShow', isPluginShow)
-    //   console.log('微应用观察者： 改变前的值为 ', prevState.isPluginShow)
-    //   console.log('微应用观察者： 改变后的值为 ', state.isPluginShow)
-    // }, true)
-    // this.datasetInfo = this.$store.state.datasetInfo
-    // this.pluginInfo = this.$store.state.pluginInfo
     this.datasetInfo = this.$pluginAPI.getDatasetInfo()
+    this.inputForm.inputFile = '{workspace}' + this.datasetInfo.path
     console.log(this.datasetInfo, 'datasetInfo')
   },
   methods: {
     callService () {
-      // this.isShow = false;
-      console.log(this.inputForm)
-      this.title = ''
-      this.inputForm.projectId = this.projectId
-      this.inputForm.datasetInfo = {
-        creator: 'admin',
-        name: this.datasetInfo.name + '_' + this.pluginInfo.name,
-        kind: this.datasetInfo.kind
-      }
-      // this.pluginInput.forEach((item) => {
-      //   if (item.type === 'inputDataSet') {
-      //     this.paramForm[item.englishName] = {
-      //       value: '{workspace}' + this.datasetInfo.path,
-      //       type: item.type
-      //     }
-      //   } else if (item.type === 'outputDataSet') {
-      //     this.paramForm[item.englishName] = {
-      //       value: '',
-      //       type: item.type
-      //     }
-      //   } else {
-      //     var tmp = this.form[item.englishName]
-      //     this.paramForm[item.englishName] = {
-      //       value: tmp,
-      //       type: item.type
-      //     }
-      //   }
-      // })
-      // this.inputForm.inputData = this.paramForm
-      // this.$axios
-      //   .post(this.pluginURL + '/plugin/invoke/' + this.pluginInfo.pluginName, this.inputForm)
-      //   .then((res) => {
-      //     console.log(res.data)
-      //     if (res.data !== 'ERROR') this.isSuccess = true
-      //     this.isCreated = true
-      //     this.time = new Date()
-      //   })
+      this.$pluginAPI.getNewDatasetPath().then((res) => {
+        console.log(res)
+        this.inputForm.outputFile = '{workspace}' + res
+        this.$axios
+          .post(this.$$pluginAPI.getPluginInfoAPI.ShadowsProAddr.url, { inputData: this.inputForm })
+          .then((res) => {
+            console.log(res.data)
+            if (res.data !== 'ERROR') this.isSuccess = true
+            this.isCreated = true
+            this.time = new Date()
+          })
+        this.title = ''
+      })
     },
     cancel () {
-      console.log(111)
-      const isPluginShow = false
-      actions.setGlobalState({ isPluginShow })
-    //   this.$emit('closePlugin')
+      this.$pluginAPI.closePlugin()
     },
     returnModify () {
       this.isCreated = false
     },
     showProgress () {
-      // this.isCreated = false;
-      // this.isProgress = true;
-      // this.title = "进度";
     }
   }
 }
